@@ -2,6 +2,98 @@ export interface User {
   id: string;
   email: string;
   displayName?: string;
+  subscription?: SubscriptionInfo;
+  billingDetails?: BillingDetails;
+  createdAt?: number;
+}
+
+// Abonelik bilgileri
+export interface SubscriptionInfo {
+  planId: string;
+  status: 'active' | 'inactive' | 'trialing' | 'past_due' | 'canceled' | 'unpaid';
+  currentPeriodStart: number;
+  currentPeriodEnd: number;
+  cancelAtPeriodEnd?: boolean;
+  trialEnd?: number | null;
+  lastPaymentDate?: number | null;
+  nextPaymentDate?: number | null;
+  subscriptionId?: string; // Ödeme sağlayıcı tarafından sağlanan ID
+}
+
+// Fatura bilgileri
+export interface BillingDetails {
+  name?: string;
+  company?: string;
+  address?: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+  };
+  vatNumber?: string;
+  paymentMethod?: {
+    type: 'card' | 'bank_transfer' | 'paypal';
+    last4?: string;
+    brand?: string;
+    expiryMonth?: number;
+    expiryYear?: number;
+  } | null;
+}
+
+// Fiyatlandırma planı
+export interface PricingPlan {
+  id: string;
+  name: string;
+  description: string;
+  price: number; // Aylık fiyat (TL)
+  yearlyPrice?: number; // Yıllık fiyat (TL, indirimli)
+  features: string[];
+  limitations: {
+    projects?: number | 'unlimited'; // Proje sayısı sınırı
+    storage?: number; // GB cinsinden depolama
+    teamMembers?: number | 'unlimited'; // Ekip üyesi sayısı
+    apiCalls?: number | 'unlimited'; // Aylık API çağrı limiti
+  };
+  recommended?: boolean;
+  available: boolean;
+  trialDays?: number; // Ücretsiz deneme süresi (gün)
+  popular?: boolean; // Öne çıkarılacak plan
+  badge?: string; // "Yeni", "İndirimli" vb. rozet metni
+}
+
+// Fatura bilgisi
+export interface Invoice {
+  id: string;
+  userId: string;
+  amount: number;
+  status: 'paid' | 'unpaid' | 'void' | 'pending';
+  date: number;
+  dueDate: number;
+  items: {
+    description: string;
+    amount: number;
+    quantity: number;
+  }[];
+  pdfUrl?: string;
+  paymentId?: string;
+}
+
+// Ödeme geçmişi
+export interface PaymentHistory {
+  id: string;
+  userId: string;
+  amount: number;
+  status: 'succeeded' | 'failed' | 'pending' | 'refunded';
+  date: number;
+  paymentMethod: {
+    type: 'card' | 'bank_transfer' | 'paypal';
+    last4?: string;
+    brand?: string;
+  };
+  description: string;
+  invoiceId?: string;
 }
 
 export interface Project {
