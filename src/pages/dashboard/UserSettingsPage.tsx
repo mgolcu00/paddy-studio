@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,12 +36,8 @@ export function UserSettingsPage() {
   const [showNewKeyModal, setShowNewKeyModal] = useState(false);
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
 
-  // Fetch API Keys on mount
-  useEffect(() => {
-    fetchKeys();
-  }, [currentUser]); // Re-fetch if user changes
-
-  const fetchKeys = async () => {
+  // Wrap fetchKeys in useCallback
+  const fetchKeys = useCallback(async () => {
     if (!currentUser?.id) {
       setIsFetchingKeys(false);
       return;
@@ -56,7 +52,12 @@ export function UserSettingsPage() {
     } finally {
       setIsFetchingKeys(false);
     }
-  };
+  }, [currentUser, toast]);
+
+  // Fetch API Keys on mount
+  useEffect(() => {
+    fetchKeys();
+  }, [fetchKeys]); // Use fetchKeys as dependency
 
   // Updated key generation handler
   const handleGenerateKey = async () => {

@@ -55,24 +55,6 @@ export function EditorPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!projectId || !pageId) {
-      console.warn("EditorPage: projectId or pageId missing in initial render/params.");
-      setIsLoading(false);
-      return;
-    }
-    fetchEditorData();
-  }, [projectId, pageId]);
-
-  useEffect(() => {
-    if (selectedComponentId && components.length > 0) {
-      const { component: found } = findComponentLocation(components, selectedComponentId);
-      setSelectedComponent(found);
-    } else {
-      setSelectedComponent(null);
-    }
-  }, [selectedComponentId, components]);
-
   const fetchEditorData = useCallback(async () => {
     if (!projectId || !pageId) return;
 
@@ -119,6 +101,24 @@ export function EditorPage() {
       setIsLoading(false);
     }
   }, [projectId, pageId, currentUser, navigate, toast]);
+
+  useEffect(() => {
+    if (!projectId || !pageId) {
+      console.warn("EditorPage: projectId or pageId missing in initial render/params.");
+      setIsLoading(false);
+      return;
+    }
+    fetchEditorData();
+  }, [fetchEditorData]);
+
+  useEffect(() => {
+    if (selectedComponentId && components.length > 0) {
+      const { component: found } = findComponentLocation(components, selectedComponentId);
+      setSelectedComponent(found);
+    } else {
+      setSelectedComponent(null);
+    }
+  }, [selectedComponentId, components]);
 
   const handlePageChange = (newPageId: string) => {
     if (newPageId && newPageId !== pageId) {
@@ -517,7 +517,6 @@ export function EditorPage() {
                              components={components}
                              selectedComponentId={selectedComponentId}
                              onSelect={handleComponentSelect}
-                             onReorder={() => { /* TODO: Implement reordering via LayerView */ }}
                          />
                      </TabsContent>
                  </Tabs>

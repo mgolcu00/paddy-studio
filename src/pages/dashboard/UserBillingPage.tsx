@@ -28,6 +28,7 @@ export function UserBillingPage() {
   const [cancelingSubscription, setCancelingSubscription] = useState(false);
   const [savingBillingDetails, setSavingBillingDetails] = useState(false);
   const [allPlans, setAllPlans] = useState<PricingPlan[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   // Kullanıcı verilerini yükle
   useEffect(() => {
@@ -75,6 +76,12 @@ export function UserBillingPage() {
 
     fetchUserData();
   }, [currentUser]);
+
+  useEffect(() => {
+    if (error) {
+      toast({ title: "Error fetching subscription", description: error, variant: "destructive" });
+    }
+  }, [subscription, error, toast]);
 
   // Aboneliği iptal et
   const handleCancelSubscription = async () => {

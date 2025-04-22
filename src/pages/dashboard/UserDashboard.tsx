@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -100,24 +100,27 @@ export function UserDashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchProjects();
-  }, [currentUser]);
-
-  const fetchProjects = async () => {
-    if (!currentUser?.id) return;
+  const fetchProjects = useCallback(async () => {
+    if (!currentUser?.id) {
+       console.log("User not available, cannot fetch projects.");
+       return;
+    } 
     setIsLoading(true);
     try {
-      const projectsList = await getProjects(currentUser.id);
-      projectsList.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-      setProjects(projectsList);
-    } catch (error) {
+      const userProjects = await getProjects(currentUser.id);
+      userProjects.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      setProjects(userProjects);
+    } catch (error: any) {
       console.error("Error fetching projects:", error);
-      toast({ title: 'Projeler Yüklenemedi', description: 'Projelerinizi yüklerken bir hata oluştu. Lütfen tekrar deneyin.', variant: 'destructive' });
+      toast({ title: "Error", description: `Failed to fetch projects: ${error.message}`, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentUser, toast]);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
 
   const handleCreateProject = async () => {
     if (!newProjectName.trim() || !currentUser?.id) return;

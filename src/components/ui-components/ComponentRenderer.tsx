@@ -1,21 +1,21 @@
 import {
   Component, 
   ComponentID, 
-  ComponentType, 
+  // ComponentType, // Removed unused import
   // Import specific component types used in renderer logic
-  TextComponent,
-  ButtonComponent,
-  ImageComponent,
+  // TextComponent, // Removed unused import
+  // ButtonComponent, // Removed unused import
+  // ImageComponent, // Removed unused import
   RowComponent,
   ColumnComponent,
   DividerComponent,
-  BoxComponent,
+  // BoxComponent, // Removed unused import
   IconComponent,
   InputComponent,
   CardComponent,
   SpacerComponent,
   // We might need BaseProps if we access its properties directly
-  BaseProps,
+  // BaseProps, // Removed unused import
   LinkComponent,
   VideoComponent,
   // Yeni component'ler için tip tanımlarını ekleyelim
@@ -39,12 +39,14 @@ import { useDroppable } from '@dnd-kit/core';
 import React, { useState } from 'react'; // Import React for createElement if needed
 import { Input } from '@/components/ui/input'; // Need Input for InputComponent
 import { Label } from '@/components/ui/label'; // Need Label for InputComponent
-import { Card } from '@/components/ui/card';   // Need Card for CardComponent
+// import { Card } from '@/components/ui/card';   // Removed unused import
 import { AspectRatio } from "@/components/ui/aspect-ratio" // For Image aspect ratio
 import { Checkbox } from "@/components/ui/checkbox"; // For Checkbox component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // For Select component
 import { Progress } from "@/components/ui/progress"; // For ProgressBar component
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"; // For Table component
+import { Table, TableBody, /* TableCaption, */ TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"; // Removed unused import
+import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ShadcnCard } from "@/components/ui/shadcn-card";
 
 interface ComponentRendererProps {
   component: Component;
@@ -130,7 +132,7 @@ export function ComponentRenderer({
   // --- Component Rendering Logic --- 
 
   switch (component.type) {
-    case 'Text':
+    case 'Text': {
       const textProps = component.props as TypographyProps;
       return (
         <div 
@@ -150,8 +152,9 @@ export function ComponentRenderer({
           {textProps.text || 'Text Component'} 
         </div>
       );
+    }
 
-    case 'Button':
+    case 'Button': {
       const buttonProps = component.props as ButtonComponentType['props'];
       // Cast icon component to any to avoid JSX type errors
       const ButtonIcon: any = buttonProps.icon ? (Icons[buttonProps.icon as keyof typeof Icons] || null) : null;
@@ -175,8 +178,9 @@ export function ComponentRenderer({
           </Button>
         </div>
       );
+    }
 
-    case 'Image':
+    case 'Image': {
       const imageProps = component.props as ImageComponentType['props'];
       const img = (
            <img
@@ -203,8 +207,9 @@ export function ComponentRenderer({
           )}
         </div>
       );
+    }
 
-    case 'Icon':
+    case 'Icon': {
       const iconProps = component.props as IconComponent['props'];
       const IconComponent = Icons[iconProps.name as keyof typeof Icons]; 
       // Check if it's a valid component before rendering
@@ -226,8 +231,9 @@ export function ComponentRenderer({
           />
         </div>
       );
+    }
 
-    case 'Input':
+    case 'Input': {
       const inputProps = component.props as InputComponent['props'];
       const inputId = `${component.id}-input`;
       return (
@@ -266,43 +272,27 @@ export function ComponentRenderer({
           />
         </div>
       );
+    }
 
-    case 'Card':
-      const cardProps = component.props as CardComponent['props'];
-      const boxShadowClass = (() => {
-        switch (cardProps.boxShadow) {
-          case 'sm': return 'shadow-sm';
-          case 'md': return 'shadow-md';
-          case 'lg': return 'shadow-lg';
-          case 'none': return '';
-          default: return 'shadow-sm'; // Varsayılan değer
-        }
-      })();
-      
+    case 'Card': {
       return (
-        <div 
+        <div
           ref={containerRef}
-          className={cn(
-            wrapperClasses, 
-            'rounded-lg overflow-hidden',
-            boxShadowClass,
-            isContainer && !isPreview && 'min-h-[100px] border border-dashed border-transparent hover:border-blue-300'
-          )} 
+          className={wrapperClasses}
           onClick={handleClick}
-          style={{
-            ...baseStyle,
-          }}
+          style={baseStyle}
         >
           {renderChildren() || (
             !isPreview && isContainer && 
-            <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground p-8">
-              Bileşenleri buraya sürükleyin
+            <div className="flex items-center justify-center text-xs text-muted-foreground h-20 border border-dashed">
+              Drop components here
             </div>
           )}
         </div>
       );
+    }
       
-    case 'Spacer':
+    case 'Spacer': {
       const spacerProps = component.props as SpacerComponent['props'];
       return (
         <div 
@@ -319,8 +309,9 @@ export function ComponentRenderer({
           }}
         />
       );
+    }
 
-    case 'Divider':
+    case 'Divider': {
       const dividerProps = component.props as DividerComponent['props'];
       return (
         <div 
@@ -338,8 +329,9 @@ export function ComponentRenderer({
           />
         </div>
       );
+    }
       
-    case 'Row':
+    case 'Row': {
       const rowProps = component.props as RowComponent['props'];
       return (
         <div 
@@ -360,8 +352,9 @@ export function ComponentRenderer({
           )}
         </div>
       );
+    }
 
-    case 'Column':
+    case 'Column': {
       const colProps = component.props as ColumnComponent['props'];
       return (
         <div 
@@ -381,8 +374,9 @@ export function ComponentRenderer({
           )}
         </div>
       );
+    }
       
-    case 'Box':
+    case 'Box': {
       // Box is a generic container
       return (
         <div 
@@ -398,8 +392,9 @@ export function ComponentRenderer({
           )}
         </div>
       );
+    }
 
-    case 'Link':
+    case 'Link': {
       const linkProps = component.props as LinkComponent['props'];
       return (
         <div 
@@ -424,8 +419,9 @@ export function ComponentRenderer({
           </a>
         </div>
       );
+    }
 
-    case 'Video':
+    case 'Video': {
       const videoProps = component.props as VideoComponent['props'];
       return (
         <div 
@@ -456,8 +452,9 @@ export function ComponentRenderer({
           )}
         </div>
       );
+    }
 
-    case 'Container':
+    case 'Container': {
       const containerProps = component.props as ContainerComponent['props'];
       return (
         <div 
@@ -474,8 +471,9 @@ export function ComponentRenderer({
           {renderChildren()}
         </div>
       );
+    }
 
-    case 'Grid':
+    case 'Grid': {
       const gridProps = component.props as GridComponent['props'];
       return (
         <div 
@@ -496,34 +494,35 @@ export function ComponentRenderer({
           {renderChildren()}
         </div>
       );
+    }
 
-    case 'Checkbox':
+    case 'Checkbox': {
       const checkboxProps = component.props as CheckboxComponent['props'];
+      const checkboxId = `${component.id}-checkbox`;
       return (
-        <div 
-          className={wrapperClasses} 
+        <div
+          className={wrapperClasses + ' flex items-center space-x-2'}
           onClick={handleClick} 
-          style={baseStyle}
+          style={baseStyle} 
         >
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id={`checkbox-${component.id}`} 
-              checked={checkboxProps.checked === true}
-              disabled={checkboxProps.disabled === true}
-            />
-            {checkboxProps.label && (
-              <Label 
-                htmlFor={`checkbox-${component.id}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {checkboxProps.label}
-              </Label>
-            )}
-          </div>
+          <Checkbox 
+            id={checkboxId}
+            checked={checkboxProps.checked ?? false}
+            aria-label={checkboxProps.label || 'Checkbox'} 
+          />
+          {checkboxProps.label && (
+            <Label 
+              htmlFor={checkboxId}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {checkboxProps.label}
+            </Label>
+          )}
         </div>
       );
+    }
 
-    case 'Select':
+    case 'Select': {
       const selectProps = component.props as SelectComponent['props'];
       return (
         <div 
@@ -536,7 +535,7 @@ export function ComponentRenderer({
               {selectProps.label}
             </Label>
           )}
-          <Select disabled={selectProps.disabled} defaultValue={selectProps.defaultValue || undefined}>
+          <Select disabled={selectProps.disabled} defaultValue={selectProps.defaultValue ?? undefined}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder={selectProps.placeholder || 'Select an option'} />
             </SelectTrigger>
@@ -556,8 +555,9 @@ export function ComponentRenderer({
           </Select>
         </div>
       );
+    }
 
-    case 'Carousel':
+    case 'Carousel': {
       const carouselProps = component.props as CarouselComponent['props'];
       // Basit bir carousel implementations yapıyoruz, gerçek bir carousel kütüphanesi olmadan
       const hasChildren = 'children' in component && Array.isArray(component.children) && component.children.length > 0;
@@ -643,8 +643,9 @@ export function ComponentRenderer({
           )}
         </div>
       );
+    }
 
-    case 'Table':
+    case 'Table': {
       const tableProps = component.props as TableComponent['props'];
       const columns = tableProps.columns || [
         { key: 'column1', title: 'Column 1', width: '33%' },
@@ -701,8 +702,9 @@ export function ComponentRenderer({
           )}
         </div>
       );
+    }
 
-    case 'ProgressBar':
+    case 'ProgressBar': {
       const progressProps = component.props as ProgressBarComponent['props'];
       const value = progressProps.value !== null && progressProps.value !== undefined ? progressProps.value : 50;
       const max = progressProps.max !== null && progressProps.max !== undefined ? progressProps.max : 100;
@@ -738,6 +740,7 @@ export function ComponentRenderer({
           </div>
         </div>
       );
+    }
 
     default:
       // Exhaustiveness check - this should ideally not happen with typed components

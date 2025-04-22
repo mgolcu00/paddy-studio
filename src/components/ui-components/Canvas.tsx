@@ -17,7 +17,7 @@ interface CanvasProps {
 type ViewportSize = 'mobile' | 'tablet' | 'desktop';
 
 const viewportSizes = {
-  mobile: { width: 375, height: 667 },
+  mobile: { width: 375, height: 820 },
   tablet: { width: 768, height: 1024 },
   desktop: { width: 1280, height: 800 }
 };
